@@ -37,12 +37,15 @@ class TimeInterpreter(object):
         self.weekre = re.compile( r'(.*) (week)s?')        
         self.monthre = re.compile( r'(.*) (month)s?')
         self.yearre = re.compile( r'(.*) (year)s?')
-        self.timere = re.compile( r'(\d+):(\d\d)\s?(am|pm)?')
+        self.timere = re.compile( r'(\d+)(:(\d\d))?\s?(am|pm)?')
         self.nlp = spacy.load("en_core_web_sm")
 
     def grok(self, timestr, curtime=None, expectFuture=True):
         if curtime is None:
             curtime = datetime.datetime.now()
+        if timestr is None:
+            return None
+        timestr = timestr.lower()
 
         tquantity=1 # Assume a quantity of one, should enable a use case like "In a minute"
         tunit=None
@@ -56,11 +59,15 @@ class TimeInterpreter(object):
             if ent.label_ in  ["TIME","DATE"]:
                 timeent = ent.text
                 #print(ent.label_, ent.text)
+
+        if "at" in timestr and timeent is None:
+            # Force a specified time process on the string as spacy will label it as CARDINAL by mistake
+            timeent=timestr
             
         if timeent is not None:
             #print("Extracting time.")
             if "at" in timestr.lower():
-                m = self.timere.match(timeent)
+                m = self.timere.search(timeent)
                 if m:
                     esttime = self.interpretTimeMatch( m, curtime, expectFuture)
                 else:
@@ -94,10 +101,13 @@ class TimeInterpreter(object):
 
     def interpretTimeMatch(self, tm, curtime, expectFuture):
         hh=int(tm.group(1))
-        mm=int(tm.group(2))
-        ampm=None
+        #print(f"{tm} {tm.group(1)} {tm.group(2)} {tm.group(3)} {tm.group(4)}")
+        mm=0
         if tm.group(3):
-            ampm=tm.group(3)
+            mm=int(tm.group(3))
+        ampm=None
+        if tm.group(4):
+            ampm=tm.group(4)
         if ampm is not None and ampm == "pm":
             hh=hh+12
             

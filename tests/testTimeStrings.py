@@ -115,8 +115,16 @@ class TestTimeStrings(unittest.TestCase):
         res1 = self.doTest( "At 07:45", morning, expectTime=True)
         assert res1 > curtime, f"Expected TimeGrok to return a time in the future! {res1=} > {curtime=}"
         res1 = self.doTest( "At 3:30", morning, expectTime=True)
-        assert res1 > curtime, f"Expected TimeGrok to return a time in the future! {res1=} > {curtime=}"                
-
+        assert res1 > curtime, f"Expected TimeGrok to return a time in the future! {res1=} > {curtime=}"
+        res1 = self.doTest( "At 1:00PM", morning, expectTime=True)
+        assert res1 > curtime, f"Expected TimeGrok to return a time in the future! {res1=} > {curtime=}"
+        assert abs((res1 - curtime).total_seconds())< 7.5 * 60*60, f"Expected TimeGrok to return a time at approximately 1PM! {res1=} > {curtime=}"
+        res1 = self.doTest( "At 1PM", morning, expectTime=True)
+        assert res1 > curtime, f"Expected TimeGrok to return a time in the future! {res1=} > {curtime=}"
+        assert abs((res1 - curtime).total_seconds())< 7.5 * 60*60, f"Expected TimeGrok to return a time at approximately 1PM! {res1=} > {curtime=}"
+        res1 = self.doTest( "At 4AM", morning, expectTime=True)
+        assert res1 > curtime, f"Expected TimeGrok to return a time in the future! {res1=} > {curtime=}"
+        
         # Afternoon for tomorrow morning
         curtime=afternoon=datetime.datetime( now.year, now.month, now.day, 19, 30)
         res1 = self.doTest( "At 07:45 AM", afternoon, expectTime=True)
