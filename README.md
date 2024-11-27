@@ -11,14 +11,16 @@ This module can interpret time strings such as:
 - in five minutes
 - in twenty five minutes
 
-Or in precise date expressions such as:
+Or in-precise date expressions such as:
 
 - next monday
 - last tuesday
 - in 7 days
 - month end
 
-My motivation for this module is for a personal voice assistant with reminder skills similar to Alexa.
+My motivation for this module is for a personal voice assistant with reminder skills similar to Alexa. E.g:
+- Alexa set a reminder for 10 minutes from now
+
 
 ## Author
 
